@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Brew AI | Starbucks</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Deep Brew <span class="ai-badge">AI</span></h1>
+            <p>Hyper-Personalized Barista</p>
+        </header>
+
+        <div class="menu-scroll">
+            <div class="menu-card" onclick="addToCart('Nitro Cold Brew', 315)">Nitro<br>₹315</div>
+            <div class="menu-card" onclick="addToCart('Caramel Macchiato', 345)">Caramel<br>₹345</div>
+            <div class="menu-card" onclick="addToCart('Caffè Latte', 285)">Latte<br>₹285</div>
+            <div class="menu-card" onclick="addToCart('Matcha Latte', 295)">Matcha<br>₹295</div>
+            <div class="menu-card" onclick="addToCart('White Mocha', 395)">Mocha<br>₹395</div>
+        </div>
+
+        <form action="/" method="POST" id="brewForm">
+            <input type="hidden" name="lat" value="19.0760">
+            <input type="hidden" name="lon" value="72.8777">
+            <main class="card">
+                <h3>Contextual Input</h3>
+                <label>Vibe Selection</label>
+                <select name="type">
+                    <option value="hot">Hot (Morning Rush)</option>
+                    <option value="cold" selected>Cold (Afternoon Slump)</option>
+                </select>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Sweetness (1-5)</label>
+                        <input type="number" name="sweetness" min="1" max="5" value="3">
+                    </div>
+                    <div class="input-group">
+                        <label>Caffeine (1-5)</label>
+                        <input type="number" name="caffeine" min="1" max="5" value="3">
+                    </div>
+                </div>
+                <label>Milk Preference</label>
+                <select name="milk">
+                    <option value="yes">Includes Milk</option>
+                    <option value="no">Black / Non-Dairy</option>
+                </select>
+                <button type="submit" class="generate-btn">Generate Recommendation</button>
+            </main>
+        </form>
+
+        {% if drink %}
+        <div id="result" class="result-card">
+            <div class="result-header">
+                <small>AI SELECTION</small>
+                <span class="price-tag">₹{{ drink.price }}</span>
+            </div>
+            <h2>{{ drink.name }}</h2>
+            <button class="add-to-cart-btn" onclick="addToCart('{{ drink.name }}', {{ drink.price }})">Add to Order</button>
+            <div class="reward-loop">
+                <span>Reward this logic?</span>
+                <div class="btn-group">
+                    <button class="mini-btn">👍 Like</button>
+                    <button class="mini-btn">👎 Dislike</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card location-list">
+            <h3>Nearby Stores</h3>
+            {% for store in stores %}
+            <div class="store-item">
+                <div>
+                    <strong>{{ store.name }}</strong>
+                    <p>{{ store.distance }} km away</p>
+                </div>
+                <button class="mini-btn" onclick="alert('Navigating to {{ store.name }}')">Go</button>
+            </div>
+            <hr style="opacity: 0.1; margin: 10px 0;">
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div id="cartDrawer" class="cart-drawer">
+            <div class="cart-header">
+                <strong>Your Bag (<span id="itemCount">0</span>)</strong>
+                <strong id="cartTotal">₹0</strong>
+            </div>
+            <div id="cartItems" class="cart-items"></div>
+            <div class="cart-btn-group">
+                <button class="secondary-btn" onclick="hideCart()">Back</button>
+                <button class="checkout-btn" onclick="processPayment()">Order Now</button>
+            </div>
+        </div>
+
+        <div id="paymentOverlay" class="payment-modal" style="display:none;">
+            <div class="modal-content">
+                <div class="loader" id="mainLoader"></div>
+                <div id="successContent" style="display:none;">
+                    <div class="success-icon">✓</div>
+                    <h3>Order Confirmed!</h3>
+                    <button class="mini-btn" onclick="clearSession()">New Order</button>
+                </div>
+                <p id="statusText">Processing...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('brewCart')) || [];
+        let total = parseInt(localStorage.getItem('brewTotal')) || 0;
+
+        window.onload = function() {
+            updateUI();
+            const resultCard = document.getElementById('result');
+            if (resultCard) resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+
+        function addToCart(name, price) {
+            cart.push({name, price});
+            total += price;
+            localStorage.setItem('brewCart', JSON.stringify(cart));
+            localStorage.setItem('brewTotal', total);
+            updateUI();
+            document.getElementById('cartDrawer').classList.add('active');
+        }
+
+        function hideCart() { document.getElementById('cartDrawer').classList.remove('active'); }
+
+        function updateUI() {
+            const list = document.getElementById('cartItems');
+            if(list) {
+                list.innerHTML = cart.map(item => `<div class="cart-item"><span>${item.name}</span><span>₹${item.price}</span></div>`).join('');
+                document.getElementById('cartTotal').innerText = `₹${total}`;
+                document.getElementById('itemCount').innerText = cart.length;
+            }
+        }
+
+        function processPayment() {
+            if(cart.length === 0) return;
+            document.getElementById('paymentOverlay').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('mainLoader').style.display = 'none';
+                document.getElementById('statusText').style.display = 'none';
+                document.getElementById('successContent').style.display = 'block';
+                localStorage.clear();
+            }, 2000);
+        }
+
+        function clearSession() {
+            localStorage.clear();
+            location.reload();
+        }
+    </script>
+</body>
+</html>
