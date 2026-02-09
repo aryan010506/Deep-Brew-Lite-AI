@@ -1,38 +1,27 @@
-# Deep-Brew-Lite-AI
-☕ Deep Brew Lite: Hyper-Personalized AI Barista
-Project Overview
+# ☕ Deep Brew Lite: Hyper-Personalized AI Barista
+
+# Project Overview
 Deep Brew Lite is a "Phygital" retail automation tool inspired by the Starbucks Deep Brew AI platform. It moves beyond static mass marketing to create a "segment-of-one" experience using real-time contextual factors.
-+1
 
 This project demonstrates how AI can "restore human connection" by automating operational heavy lifting, such as inventory prediction and drink sequencing, allowing the human element to remain at the core of the service industry.
-+1
 
-Key Features & Domain Alignment
+# Key Features & Domain Alignment
 
 Contextual Bandit Engine: Unlike simple filters, this system scores recommendations based on real-time "Environment" factors (Vibe, Sweetness, Caffeine) and past user "Rewards".
-+1
-
 
 Operational Excellence (OpEx): Integrated "Smart Queue" status overlays simulate the reduction of cognitive load on baristas.
-+1
 
-
-Phygital Continuity: Bridging the "Digital Paradox" by linking digital intent directly to physical store locations and transactional checkout.
-+1
-
+Phygital Continuity: Bridging the "Digital Paradox" by linking digital intent directly to physical store locations and transactional checkout
 
 Reinforcement Learning Feedback: Includes a feedback loop (Like/Dislike) that simulates how a model updates its "Policy" to minimize "Regret" in future interactions.
-+2
 
-Technical Stack
+# Technical Stack
 
 Backend: Python / Flask (Simulating a high-throughput microservices architecture).
-
 
 Logic: Custom Weighted Scoring Algorithm (Heuristic version of Reinforcement Learning).
 
 Frontend: HTML5, CSS3 (Glassmorphism UI), JavaScript (Local persistence via localStorage).
-
 
 Data Architecture: Unified data layer to ensure state persistence across user sessions.
 
