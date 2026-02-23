@@ -6,7 +6,8 @@ from stores import stores
 app = Flask(__name__)
 
 def calculate_distance(lat1, lon1, lat2, lon2):
-    R = 6371
+    """Calculates distance between coordinates to find the nearest physical store."""
+    R = 6371 
     dlat = math.radians(lat2 - lat1)
     dlon = math.radians(lon2 - lon1)
 
@@ -27,22 +28,21 @@ def index():
 
     if request.method == "POST":
         profile = {
-            "preferred_type": request.form["type"],
-            "sweetness": int(request.form["sweetness"]),
-            "caffeine": int(request.form["caffeine"]),
-            "milk": True if request.form["milk"] == "yes" else False
+            "preferred_type": request.form.get("type"),
+            "sweetness": int(request.form.get("sweetness", 3)),
+            "caffeine": int(request.form.get("caffeine", 3)),
+            "milk": True if request.form.get("milk") == "yes" else False
         }
 
+    
         drink = recommend_drink(profile)
 
-        user_lat = float(request.form["lat"])
-        user_lon = float(request.form["lon"])
+        
+        user_lat = float(request.form.get("lat", 19.0760))
+        user_lon = float(request.form.get("lon", 72.8777))
 
         for store in stores:
-            dist = calculate_distance(
-                user_lat, user_lon,
-                store["lat"], store["lon"]
-            )
+            dist = calculate_distance(user_lat, user_lon, store["lat"], store["lon"])
             nearby_stores.append({
                 "name": store["name"],
                 "distance": dist,
@@ -50,6 +50,7 @@ def index():
                 "lon": store["lon"]
             })
 
+       
         nearby_stores = sorted(nearby_stores, key=lambda x: x["distance"])
 
     return render_template(
